@@ -43,9 +43,28 @@ import TeacherMarks from '../pages/teacher/TeacherMarks';
 import TeacherTimetable from '../pages/teacher/TeacherTimetable';
 import TeacherAnnouncements from '../pages/teacher/TeacherAnnouncements';
 
-// Student & Parent Dashboards
+// Student Pages
 import StudentDashboard from '../pages/student/StudentDashboard';
+import StudentAttendance from '../pages/student/StudentAttendance';
+import StudentMaterials from '../pages/student/StudentMaterials';
+import StudentAssignments from '../pages/student/StudentAssignments';
+import StudentSubmissions from '../pages/student/StudentSubmissions';
+import StudentMarks from '../pages/student/StudentMarks';
+import StudentTimetable from '../pages/student/StudentTimetable';
+import StudentAnnouncements from '../pages/student/StudentAnnouncements';
+import StudentNotifications from '../pages/student/StudentNotifications';
+import StudentProfile from '../pages/student/StudentProfile';
+
+// Parent Pages
 import ParentDashboard from '../pages/parent/ParentDashboard';
+import ParentChildren from '../pages/parent/ParentChildren';
+import ChildAttendance from '../pages/parent/ChildAttendance';
+import ChildAssignments from '../pages/parent/ChildAssignments';
+import ChildMarks from '../pages/parent/ChildMarks';
+import ChildTimetable from '../pages/parent/ChildTimetable';
+import ParentAnnouncements from '../pages/parent/ParentAnnouncements';
+import ParentNotifications from '../pages/parent/ParentNotifications';
+import ParentProfile from '../pages/parent/ParentProfile';
 
 const AppRoutes = () => {
   return (
@@ -98,6 +117,15 @@ const AppRoutes = () => {
         <Route element={<RoleRoute allowedRoles={['student']} />}>
           <Route element={<StudentLayout />}>
             <Route path="/student/dashboard" element={<StudentDashboard />} />
+            <Route path="/student/attendance" element={<StudentAttendance />} />
+            <Route path="/student/materials" element={<StudentMaterials />} />
+            <Route path="/student/assignments" element={<StudentAssignments />} />
+            <Route path="/student/submissions" element={<StudentSubmissions />} />
+            <Route path="/student/marks" element={<StudentMarks />} />
+            <Route path="/student/timetable" element={<StudentTimetable />} />
+            <Route path="/student/announcements" element={<StudentAnnouncements />} />
+            <Route path="/student/notifications" element={<StudentNotifications />} />
+            <Route path="/student/profile" element={<StudentProfile />} />
           </Route>
         </Route>
 
@@ -105,6 +133,14 @@ const AppRoutes = () => {
         <Route element={<RoleRoute allowedRoles={['parent']} />}>
           <Route element={<ParentLayout />}>
             <Route path="/parent/dashboard" element={<ParentDashboard />} />
+            <Route path="/parent/children" element={<ParentChildren />} />
+            <Route path="/parent/child-attendance" element={<ChildAttendance />} />
+            <Route path="/parent/child-assignments" border-color="gray" element={<ChildAssignments />} />
+            <Route path="/parent/child-marks" element={<ChildMarks />} />
+            <Route path="/parent/child-timetable" element={<ChildTimetable />} />
+            <Route path="/parent/announcements" element={<ParentAnnouncements />} />
+            <Route path="/parent/notifications" element={<ParentNotifications />} />
+            <Route path="/parent/profile" element={<ParentProfile />} />
           </Route>
         </Route>
 

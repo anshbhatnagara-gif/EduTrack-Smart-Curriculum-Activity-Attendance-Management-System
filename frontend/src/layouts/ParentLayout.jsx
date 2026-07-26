@@ -2,22 +2,26 @@ import React from 'react';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import {
   LayoutDashboard,
+  Users,
   CheckSquare,
+  ClipboardCheck,
   Award,
-  ClipboardList,
   Clock,
   Megaphone,
-  Bell
+  Bell,
+  User
 } from 'lucide-react';
 
 const parentNavItems = [
   { label: 'Dashboard', path: '/parent/dashboard', icon: LayoutDashboard },
-  { label: 'Child Attendance', path: '/parent/attendance', icon: CheckSquare },
-  { label: 'Child Marks', path: '/parent/marks', icon: Award },
-  { label: 'Pending Assignments', path: '/parent/assignments', icon: ClipboardList },
-  { label: 'Timetable', path: '/parent/timetable', icon: Clock },
+  { label: 'My Children', path: '/parent/children', icon: Users },
+  { label: 'Child Attendance', path: '/parent/child-attendance', icon: CheckSquare },
+  { label: 'Child Assignments', path: '/parent/child-assignments', icon: ClipboardCheck },
+  { label: 'Child Marks', path: '/parent/child-marks', icon: Award },
+  { label: 'Child Timetable', path: '/parent/child-timetable', icon: Clock },
   { label: 'Announcements', path: '/parent/announcements', icon: Megaphone },
   { label: 'Notifications', path: '/parent/notifications', icon: Bell },
+  { label: 'My Profile', path: '/parent/profile', icon: User }
 ];
 
 const ParentLayout = () => {
