@@ -8,6 +8,7 @@ const backendDir = path.resolve(__dirname, '../../backend');
 
 // Switch process working directory to backend so dotenv and mysql config read backend/.env
 process.chdir(backendDir);
+process.env.DB_PASSWORD = 'Ansh@2007';
 
 import test from 'node:test';
 import assert from 'node:assert';

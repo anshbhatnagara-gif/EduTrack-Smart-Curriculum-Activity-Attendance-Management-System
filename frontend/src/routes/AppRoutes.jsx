@@ -20,8 +20,17 @@ import ChangePassword from '../pages/common/ChangePassword';
 import Unauthorized from '../pages/common/Unauthorized';
 import NotFound from '../pages/common/NotFound';
 
-// Role Dashboards
+// Role Dashboards & Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
+import Teachers from '../pages/admin/Teachers';
+import Students from '../pages/admin/Students';
+import Parents from '../pages/admin/Parents';
+import AcademicSessions from '../pages/admin/AcademicSessions';
+import ClassesSections from '../pages/admin/ClassesSections';
+import Subjects from '../pages/admin/Subjects';
+import TeacherAssignments from '../pages/admin/TeacherAssignments';
+import StudentEnrollments from '../pages/admin/StudentEnrollments';
+
 import TeacherDashboard from '../pages/teacher/TeacherDashboard';
 import StudentDashboard from '../pages/student/StudentDashboard';
 import ParentDashboard from '../pages/parent/ParentDashboard';
@@ -45,6 +54,15 @@ const AppRoutes = () => {
         <Route element={<RoleRoute allowedRoles={['admin']} />}>
           <Route element={<AdminLayout />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/teachers" element={<Teachers />} />
+            <Route path="/admin/students" element={<Students />} />
+            <Route path="/admin/parents" element={<Parents />} />
+            <Route path="/admin/academic/sessions" element={<AcademicSessions />} />
+            <Route path="/admin/academic/classes" element={<ClassesSections />} />
+            <Route path="/admin/academic/sections" element={<ClassesSections />} />
+            <Route path="/admin/academic/subjects" element={<Subjects />} />
+            <Route path="/admin/academic/assignments" element={<TeacherAssignments />} />
+            <Route path="/admin/academic/enrollments" element={<StudentEnrollments />} />
           </Route>
         </Route>
 

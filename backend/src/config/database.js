@@ -1,11 +1,14 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
+const rawPassword = process.env.DB_PASSWORD !== undefined ? String(process.env.DB_PASSWORD).trim() : '';
+const password = rawPassword || 'Ansh@2007';
+
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '3306', 10),
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : '',
+  password: password,
   database: process.env.DB_NAME || 'edutrack_db',
   waitForConnections: true,
   connectionLimit: 10,
@@ -17,10 +20,9 @@ const pool = mysql.createPool({
 // Helper to execute query with parameters
 const query = async (sql, params) => {
   try {
-    const [results] = await pool.execute(sql, params);
+    const [results] = await pool.query(sql, params);
     return results;
   } catch (error) {
-    // Avoid exposing raw database error parameters to users
     console.error('Database query error:', error.message);
     throw error;
   }

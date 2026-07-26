@@ -85,7 +85,7 @@ const getTeachers = async (params) => {
   const total = countResult[0].total;
 
   sql += ' ORDER BY u.created_at DESC LIMIT ? OFFSET ?';
-  sqlParams.push(limit, offset);
+  sqlParams.push(parseInt(limit, 10), parseInt(offset, 10));
 
   const results = await query(sql, sqlParams);
   return formatPaginatedResponse(results, total, page, limit);
@@ -232,7 +232,7 @@ const getStudents = async (params) => {
   const total = countResult[0].total;
 
   sql += ' ORDER BY u.created_at DESC LIMIT ? OFFSET ?';
-  sqlParams.push(limit, offset);
+  sqlParams.push(parseInt(limit, 10), parseInt(offset, 10));
 
   const results = await query(sql, sqlParams);
   return formatPaginatedResponse(results, total, page, limit);
@@ -364,7 +364,7 @@ const getParents = async (params) => {
   const total = countResult[0].total;
 
   sql += ' ORDER BY u.created_at DESC LIMIT ? OFFSET ?';
-  sqlParams.push(limit, offset);
+  sqlParams.push(parseInt(limit, 10), parseInt(offset, 10));
 
   const results = await query(sql, sqlParams);
   return formatPaginatedResponse(results, total, page, limit);
