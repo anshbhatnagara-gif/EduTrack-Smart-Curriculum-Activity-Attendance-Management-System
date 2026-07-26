@@ -1,7 +1,9 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import PublicOnlyRoute from './PublicOnlyRoute';
+
+// Route Guards
 import ProtectedRoute from './ProtectedRoute';
+import PublicOnlyRoute from './PublicOnlyRoute';
 import RoleRoute from './RoleRoute';
 
 // Layouts
@@ -11,16 +13,14 @@ import TeacherLayout from '../layouts/TeacherLayout';
 import StudentLayout from '../layouts/StudentLayout';
 import ParentLayout from '../layouts/ParentLayout';
 
-// Auth Pages
-import Login from '../pages/auth/Login';
-
 // Common Pages
+import Login from '../pages/auth/Login';
 import Profile from '../pages/common/Profile';
 import ChangePassword from '../pages/common/ChangePassword';
 import Unauthorized from '../pages/common/Unauthorized';
 import NotFound from '../pages/common/NotFound';
 
-// Role Dashboards & Pages
+// Admin Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import Teachers from '../pages/admin/Teachers';
 import Students from '../pages/admin/Students';
@@ -31,7 +31,19 @@ import Subjects from '../pages/admin/Subjects';
 import TeacherAssignments from '../pages/admin/TeacherAssignments';
 import StudentEnrollments from '../pages/admin/StudentEnrollments';
 
+// Teacher Pages
 import TeacherDashboard from '../pages/teacher/TeacherDashboard';
+import AssignedClasses from '../pages/teacher/AssignedClasses';
+import ManualAttendance from '../pages/teacher/ManualAttendance';
+import AttendanceHistory from '../pages/teacher/AttendanceHistory';
+import TeacherMaterials from '../pages/teacher/TeacherMaterials';
+import TeacherAssignmentsList from '../pages/teacher/TeacherAssignments';
+import TeacherSubmissions from '../pages/teacher/TeacherSubmissions';
+import TeacherMarks from '../pages/teacher/TeacherMarks';
+import TeacherTimetable from '../pages/teacher/TeacherTimetable';
+import TeacherAnnouncements from '../pages/teacher/TeacherAnnouncements';
+
+// Student & Parent Dashboards
 import StudentDashboard from '../pages/student/StudentDashboard';
 import ParentDashboard from '../pages/parent/ParentDashboard';
 
@@ -70,6 +82,15 @@ const AppRoutes = () => {
         <Route element={<RoleRoute allowedRoles={['teacher']} />}>
           <Route element={<TeacherLayout />}>
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+            <Route path="/teacher/classes" element={<AssignedClasses />} />
+            <Route path="/teacher/attendance/mark" element={<ManualAttendance />} />
+            <Route path="/teacher/attendance/history" element={<AttendanceHistory />} />
+            <Route path="/teacher/materials" element={<TeacherMaterials />} />
+            <Route path="/teacher/assignments" element={<TeacherAssignmentsList />} />
+            <Route path="/teacher/submissions" element={<TeacherSubmissions />} />
+            <Route path="/teacher/marks" element={<TeacherMarks />} />
+            <Route path="/teacher/timetable" element={<TeacherTimetable />} />
+            <Route path="/teacher/announcements" element={<TeacherAnnouncements />} />
           </Route>
         </Route>
 
@@ -87,14 +108,12 @@ const AppRoutes = () => {
           </Route>
         </Route>
 
-        {/* Common Protected Pages (accessible by any logged in role) */}
-        <Route element={<AdminLayout />}>
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/change-password" element={<ChangePassword />} />
-        </Route>
+        {/* Shared Common Routes */}
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/change-password" element={<ChangePassword />} />
       </Route>
 
-      {/* Error & Fallback Routes */}
+      {/* Utility Routes */}
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
