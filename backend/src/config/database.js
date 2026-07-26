@@ -1,14 +1,15 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-const rawPassword = process.env.DB_PASSWORD !== undefined ? String(process.env.DB_PASSWORD).trim() : '';
-const password = rawPassword || 'Ansh@2007';
+if (process.env.DB_PASSWORD === undefined) {
+  throw new Error('Database configuration error: DB_PASSWORD environment variable is required.');
+}
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '3306', 10),
   user: process.env.DB_USER || 'root',
-  password: password,
+  password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME || 'edutrack_db',
   waitForConnections: true,
   connectionLimit: 10,
@@ -23,7 +24,11 @@ const query = async (sql, params) => {
     const [results] = await pool.query(sql, params);
     return results;
   } catch (error) {
-    console.error('Database query error:', error.message);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Database query error:', error.message);
+    } else {
+      console.error('Database query execution error.');
+    }
     throw error;
   }
 };
@@ -43,8 +48,17 @@ const getTransaction = async () => {
       connection.release();
     },
     execute: async (sql, params) => {
-      const [results] = await connection.execute(sql, params);
-      return results;
+      try {
+        const [results] = await connection.query(sql, params);
+        return results;
+      } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Database transaction query error:', error.message);
+        } else {
+          console.error('Database transaction execution error.');
+        }
+        throw error;
+      }
     }
   };
 };
