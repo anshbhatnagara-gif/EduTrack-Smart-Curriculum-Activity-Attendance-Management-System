@@ -17,6 +17,10 @@ const authenticate = asyncHandler(async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'super_secret_jwt_key_edutrack_2026_dev');
     
+    if (decoded.purpose && decoded.purpose === 'password-reset') {
+      throw new ApiError(401, 'Invalid token purpose. Password reset tokens cannot be used for authentication.');
+    }
+
     // Check if user still exists and is active in database
     const users = await query('SELECT id, full_name, email, role, status FROM users WHERE id = ?', [decoded.id]);
     

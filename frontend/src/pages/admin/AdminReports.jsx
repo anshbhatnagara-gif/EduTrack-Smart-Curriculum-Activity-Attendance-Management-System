@@ -2,7 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   getAdminDashboardApi,
   getAttendanceReportApi,
-  getPerformanceReportApi
+  getPerformanceReportApi,
+  exportAttendanceReportApi,
+  exportPerformanceReportApi
 } from '../../api/report.api';
 import {
   getClassesApi,
@@ -14,7 +16,7 @@ import PageHeader from '../../components/layout/PageHeader';
 import DataTable from '../../components/common/DataTable';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell, LineChart, Line
+  PieChart, Pie, Cell
 } from 'recharts';
 import { AlertCircle, Download, FileText, CheckCircle, Clock, XCircle, RefreshCw } from 'lucide-react';
 
@@ -135,6 +137,44 @@ const AdminReports = () => {
     }
   };
 
+  const handleExportAttendance = async (format) => {
+    try {
+      const params = { format };
+      if (attClassId) params.classId = attClassId;
+      if (attSectionId) params.sectionId = attSectionId;
+      if (attSubjectId) params.subjectId = attSubjectId;
+      if (attStartDate) params.startDate = attStartDate;
+      if (attEndDate) params.endDate = attEndDate;
+
+      const res = await exportAttendanceReportApi(params);
+      const blob = new Blob([res.data], { type: format === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Attendance_Report_${Date.now()}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
+      link.click();
+    } catch (err) {
+      alert('Failed to export attendance report');
+    }
+  };
+
+  const handleExportPerformance = async (format) => {
+    try {
+      const params = { format };
+      if (perfClassId) params.classId = perfClassId;
+
+      const res = await exportPerformanceReportApi(params);
+      const blob = new Blob([res.data], { type: format === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Performance_Report_${Date.now()}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
+      link.click();
+    } catch (err) {
+      alert('Failed to export performance report');
+    }
+  };
+
   const attColumns = [
     { header: 'Date', accessor: 'attendance_date', render: (row) => new Date(row.attendance_date).toLocaleDateString() },
     { header: 'Student', accessor: 'student_name' },
@@ -216,7 +256,7 @@ const AdminReports = () => {
     );
   }
 
-  const { todayAttendance, monthlyAttendanceChart, lowAttendanceStudents } = dashboard;
+  const { todayAttendance, monthlyAttendanceChart } = dashboard || {};
   
   const pieData = [
     { name: 'Present', value: todayAttendance?.present || 0 },
@@ -299,7 +339,6 @@ const AdminReports = () => {
                     ))}
                   </Pie>
                   <RechartsTooltip />
-                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -318,7 +357,6 @@ const AdminReports = () => {
                   <XAxis dataKey="month" tick={{fontSize: 12}} />
                   <YAxis tick={{fontSize: 12}} />
                   <RechartsTooltip />
-                  <Legend />
                   <Bar dataKey="present" name="Present/Late" fill="#10b981" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="absent" name="Absent" fill="#ef4444" radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -334,6 +372,14 @@ const AdminReports = () => {
       <section className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 space-y-4 md:space-y-0">
           <h2 className="text-lg font-bold text-slate-800">Detailed Attendance Report</h2>
+          <div className="flex space-x-2">
+            <button onClick={() => handleExportAttendance('pdf')} className="inline-flex items-center px-3 py-1.5 border border-slate-300 bg-white text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
+              <Download className="w-3.5 h-3.5 mr-1.5 text-rose-600" /> Export PDF
+            </button>
+            <button onClick={() => handleExportAttendance('excel')} className="inline-flex items-center px-3 py-1.5 border border-slate-300 bg-white text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
+              <Download className="w-3.5 h-3.5 mr-1.5 text-emerald-600" /> Export Excel
+            </button>
+          </div>
         </div>
         
         {/* Filters */}
@@ -389,6 +435,14 @@ const AdminReports = () => {
       <section className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 space-y-4 md:space-y-0">
           <h2 className="text-lg font-bold text-slate-800">Class Performance & Risk Report</h2>
+          <div className="flex space-x-2">
+            <button onClick={() => handleExportPerformance('pdf')} className="inline-flex items-center px-3 py-1.5 border border-slate-300 bg-white text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
+              <Download className="w-3.5 h-3.5 mr-1.5 text-rose-600" /> Export PDF
+            </button>
+            <button onClick={() => handleExportPerformance('excel')} className="inline-flex items-center px-3 py-1.5 border border-slate-300 bg-white text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
+              <Download className="w-3.5 h-3.5 mr-1.5 text-emerald-600" /> Export Excel
+            </button>
+          </div>
         </div>
         
         {/* Filters */}

@@ -9,6 +9,16 @@ const getMyProfile = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, 200, profile, 'Profile retrieved successfully.');
 });
 
+const updateMyProfile = asyncHandler(async (req, res) => {
+  const updatedProfile = await authService.updateUserProfile(
+    req.user.id,
+    req.user.role,
+    req.body,
+    req.file
+  );
+  return ApiResponse.success(res, 200, updatedProfile, 'Profile updated successfully.');
+});
+
 // Parent specific profile views
 const getMyChildren = asyncHandler(async (req, res) => {
   if (req.user.role !== 'parent') {
@@ -64,6 +74,7 @@ const getChildDetails = asyncHandler(async (req, res) => {
 
 module.exports = {
   getMyProfile,
+  updateMyProfile,
   getMyChildren,
   getChildDetails
 };

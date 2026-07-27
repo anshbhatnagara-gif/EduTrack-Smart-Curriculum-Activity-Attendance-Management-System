@@ -17,4 +17,8 @@ router.get('/attendance', authorizeRoles('teacher', 'admin'), reportController.g
 router.get('/performance', authorizeRoles('teacher', 'admin'), reportController.getPerformanceReport);
 router.get('/student-performance/:studentId', authorizeRoles('parent', 'teacher', 'admin'), reportController.getStudentPerformanceReport);
 
+// Export routes
+router.get('/export/attendance', authorizeRoles('admin', 'teacher'), reportController.exportAttendanceReport);
+router.get('/export/performance', authorizeRoles('admin', 'teacher'), reportController.exportPerformanceReport);
+
 module.exports = router;

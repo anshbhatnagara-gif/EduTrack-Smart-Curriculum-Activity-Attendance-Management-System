@@ -72,6 +72,7 @@ app.use('/api/timetable', require('./routes/timetable.routes'));
 app.use('/api/announcements', require('./routes/announcement.routes'));
 app.use('/api/notifications', require('./routes/notification.routes'));
 app.use('/api/reports', require('./routes/report.routes'));
+app.use('/api/audit-logs', require('./routes/audit.routes'));
 
 // 404 Route handler
 app.use(notFound);

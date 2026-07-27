@@ -15,6 +15,10 @@ import ParentLayout from '../layouts/ParentLayout';
 
 // Common Pages
 import Login from '../pages/auth/Login';
+import ForgotPassword from '../pages/auth/ForgotPassword';
+import VerifyOtp from '../pages/auth/VerifyOtp';
+import ResetPassword from '../pages/auth/ResetPassword';
+import AuditLogs from '../pages/common/AuditLogs';
 import Profile from '../pages/common/Profile';
 import ChangePassword from '../pages/common/ChangePassword';
 import Unauthorized from '../pages/common/Unauthorized';
@@ -45,6 +49,7 @@ import TeacherSubmissions from '../pages/teacher/TeacherSubmissions';
 import TeacherMarks from '../pages/teacher/TeacherMarks';
 import TeacherTimetable from '../pages/teacher/TeacherTimetable';
 import TeacherAnnouncements from '../pages/teacher/TeacherAnnouncements';
+import TeacherReports from '../pages/teacher/TeacherReports';
 
 // Student Pages
 import StudentDashboard from '../pages/student/StudentDashboard';
@@ -80,6 +85,9 @@ const AppRoutes = () => {
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
         </Route>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Route>
 
       {/* Protected Routes */}
@@ -116,6 +124,7 @@ const AppRoutes = () => {
             <Route path="/teacher/marks" element={<TeacherMarks />} />
             <Route path="/teacher/timetable" element={<TeacherTimetable />} />
             <Route path="/teacher/announcements" element={<TeacherAnnouncements />} />
+            <Route path="/teacher/reports" element={<TeacherReports />} />
           </Route>
         </Route>
 
@@ -148,6 +157,11 @@ const AppRoutes = () => {
             <Route path="/parent/notifications" element={<ParentNotifications />} />
             <Route path="/parent/profile" element={<ParentProfile />} />
           </Route>
+        </Route>
+
+        {/* Audit Logs Route restricted to Admin and Teacher */}
+        <Route element={<RoleRoute allowedRoles={['admin', 'teacher']} />}>
+          <Route path="/audit-logs" element={<AuditLogs />} />
         </Route>
 
         {/* Shared Common Routes */}

@@ -190,7 +190,188 @@ const getTeacherDashboardStats = async (userId) => {
   };
 };
 
+const exportAttendanceReport = async ({ userRole, userId, classId, sectionId, subjectId, startDate, endDate }) => {
+  if (userRole !== 'admin' && userRole !== 'teacher') {
+    throw new ApiError(403, 'Access denied. Report export is restricted to Admin and Teacher roles.');
+  }
+
+  const conditions = [];
+  const params = [];
+
+  if (userRole === 'teacher') {
+    const teachers = await query('SELECT id FROM teachers WHERE user_id = ?', [userId]);
+    if (teachers.length === 0) {
+      throw new ApiError(403, 'Access denied. Teacher record not found.');
+    }
+    const teacherId = teachers[0].id;
+
+    if (classId && sectionId && subjectId) {
+      const assignment = await query(
+        'SELECT id FROM teacher_assignments WHERE teacher_id = ? AND class_id = ? AND section_id = ? AND subject_id = ?',
+        [teacherId, classId, sectionId, subjectId]
+      );
+      if (assignment.length === 0) {
+        throw new ApiError(403, 'Access denied. You can only export reports for your assigned classes, sections and subjects.');
+      }
+    } else {
+      conditions.push(`EXISTS (
+        SELECT 1 FROM teacher_assignments ta
+        WHERE ta.teacher_id = ? AND ta.class_id = s.class_id AND ta.section_id = s.section_id AND ta.subject_id = s.subject_id
+      )`);
+      params.push(teacherId);
+    }
+  }
+
+  if (classId) {
+    conditions.push('s.class_id = ?');
+    params.push(classId);
+  }
+  if (sectionId) {
+    conditions.push('s.section_id = ?');
+    params.push(sectionId);
+  }
+  if (subjectId) {
+    conditions.push('s.subject_id = ?');
+    params.push(subjectId);
+  }
+  if (startDate) {
+    conditions.push('s.attendance_date >= ?');
+    params.push(startDate);
+  }
+  if (endDate) {
+    conditions.push('s.attendance_date <= ?');
+    params.push(endDate);
+  }
+
+  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  const sql = `
+    SELECT 
+      u.full_name as student_name,
+      st.admission_number,
+      c.name as class_name,
+      sec.name as section_name,
+      sub.name as subject_name,
+      s.attendance_date,
+      ar.status
+    FROM attendance_records ar
+    JOIN attendance_sessions s ON ar.attendance_session_id = s.id
+    JOIN students st ON ar.student_id = st.id
+    JOIN users u ON st.user_id = u.id
+    JOIN classes c ON s.class_id = c.id
+    JOIN sections sec ON s.section_id = sec.id
+    JOIN subjects sub ON s.subject_id = sub.id
+    ${whereClause}
+    ORDER BY s.attendance_date DESC, u.full_name ASC
+  `;
+
+  const records = await query(sql, params);
+
+  const headers = ['Student Name', 'Admission No', 'Class', 'Section', 'Subject', 'Date', 'Status'];
+  const rows = records.map(r => [
+    r.student_name,
+    r.admission_number,
+    r.class_name,
+    r.section_name,
+    r.subject_name,
+    new Date(r.attendance_date).toISOString().split('T')[0],
+    r.status.toUpperCase()
+  ]);
+
+  return { headers, rows };
+};
+
+const exportPerformanceReport = async ({ userRole, userId, classId, sectionId, subjectId }) => {
+  if (userRole !== 'admin' && userRole !== 'teacher') {
+    throw new ApiError(403, 'Access denied. Report export is restricted to Admin and Teacher roles.');
+  }
+
+  const conditions = [];
+  const params = [];
+
+  if (userRole === 'teacher') {
+    const teachers = await query('SELECT id FROM teachers WHERE user_id = ?', [userId]);
+    if (teachers.length === 0) {
+      throw new ApiError(403, 'Access denied. Teacher record not found.');
+    }
+    const teacherId = teachers[0].id;
+
+    if (classId && sectionId && subjectId) {
+      const assignment = await query(
+        'SELECT id FROM teacher_assignments WHERE teacher_id = ? AND class_id = ? AND section_id = ? AND subject_id = ?',
+        [teacherId, classId, sectionId, subjectId]
+      );
+      if (assignment.length === 0) {
+        throw new ApiError(403, 'Access denied. You can only export reports for your assigned classes, sections and subjects.');
+      }
+    } else {
+      conditions.push(`EXISTS (
+        SELECT 1 FROM teacher_assignments ta
+        WHERE ta.teacher_id = ? AND ta.class_id = se.class_id AND ta.section_id = se.section_id AND ta.subject_id = m.subject_id
+      )`);
+      params.push(teacherId);
+    }
+  }
+
+  if (classId) {
+    conditions.push('se.class_id = ?');
+    params.push(classId);
+  }
+  if (sectionId) {
+    conditions.push('se.section_id = ?');
+    params.push(sectionId);
+  }
+  if (subjectId) {
+    conditions.push('m.subject_id = ?');
+    params.push(subjectId);
+  }
+
+  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  const sql = `
+    SELECT 
+      u.full_name as student_name,
+      st.admission_number,
+      c.name as class_name,
+      sec.name as section_name,
+      sub.name as subject_name,
+      e.name as exam_name,
+      m.marks_obtained,
+      m.total_marks,
+      m.grade
+    FROM marks m
+    JOIN students st ON m.student_id = st.id
+    JOIN users u ON st.user_id = u.id
+    JOIN student_enrollments se ON st.id = se.student_id AND se.enrollment_status = 'active'
+    JOIN classes c ON se.class_id = c.id
+    JOIN sections sec ON se.section_id = sec.id
+    JOIN subjects sub ON m.subject_id = sub.id
+    JOIN exams e ON m.exam_id = e.id
+    ${whereClause}
+    ORDER BY u.full_name ASC
+  `;
+
+  const records = await query(sql, params);
+
+  const headers = ['Student Name', 'Admission No', 'Class', 'Section', 'Subject', 'Exam', 'Marks Obtained', 'Total Marks', 'Grade'];
+  const rows = records.map(r => [
+    r.student_name,
+    r.admission_number,
+    r.class_name,
+    r.section_name,
+    r.subject_name,
+    r.exam_name,
+    r.marks_obtained,
+    r.total_marks,
+    r.grade || 'N/A'
+  ]);
+
+  return { headers, rows };
+};
+
 module.exports = {
   getAdminDashboardStats,
-  getTeacherDashboardStats
+  getTeacherDashboardStats,
+  exportAttendanceReport,
+  exportPerformanceReport
 };

@@ -8,3 +8,9 @@ export const getParentDashboardApi = () => axiosClient.get('/reports/parent-dash
 export const getAttendanceReportApi = (params) => axiosClient.get('/reports/attendance', { params });
 export const getPerformanceReportApi = (params) => axiosClient.get('/reports/performance', { params });
 export const getStudentPerformanceReportApi = (studentId) => axiosClient.get(`/reports/student-performance/${studentId}`);
+
+export const exportAttendanceReportApi = (params) => 
+  axiosClient.get('/reports/export/attendance', { params, responseType: 'blob' });
+
+export const exportPerformanceReportApi = (params) => 
+  axiosClient.get('/reports/export/performance', { params, responseType: 'blob' });

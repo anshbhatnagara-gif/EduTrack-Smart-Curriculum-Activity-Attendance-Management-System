@@ -6,6 +6,7 @@ const ApiError = require('../utils/ApiError');
 const ApiResponse = require('../utils/ApiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 const calculateAttendance = require('../utils/calculateAttendance');
+const { generatePdf, generateExcel } = require('../utils/exporter');
 
 const getAdminDashboard = asyncHandler(async (req, res) => {
   const stats = await reportService.getAdminDashboardStats();
@@ -327,6 +328,62 @@ const getPerformanceReport = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, 200, reportList, 'Performance classification report generated.');
 });
 
+// Export Attendance Report (PDF / Excel)
+const exportAttendanceReport = asyncHandler(async (req, res) => {
+  const { format = 'pdf', classId, sectionId, subjectId, startDate, endDate } = req.query;
+
+  const { headers, rows } = await reportService.exportAttendanceReport({
+    userRole: req.user.role,
+    userId: req.user.id,
+    classId,
+    sectionId,
+    subjectId,
+    startDate,
+    endDate
+  });
+
+  const title = `Attendance Report (${startDate || 'All Time'} to ${endDate || 'Present'})`;
+
+  if (format === 'excel') {
+    const buffer = await generateExcel('Attendance Report', headers, rows);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="Attendance_Report_${Date.now()}.xlsx"`);
+    return res.send(buffer);
+  } else {
+    const pdfBuffer = await generatePdf(title, headers, rows);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="Attendance_Report_${Date.now()}.pdf"`);
+    return res.send(pdfBuffer);
+  }
+});
+
+// Export Performance Report (PDF / Excel)
+const exportPerformanceReport = asyncHandler(async (req, res) => {
+  const { format = 'pdf', classId, sectionId, subjectId } = req.query;
+
+  const { headers, rows } = await reportService.exportPerformanceReport({
+    userRole: req.user.role,
+    userId: req.user.id,
+    classId,
+    sectionId,
+    subjectId
+  });
+
+  const title = 'Academic Performance Report';
+
+  if (format === 'excel') {
+    const buffer = await generateExcel('Performance Report', headers, rows);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="Performance_Report_${Date.now()}.xlsx"`);
+    return res.send(buffer);
+  } else {
+    const pdfBuffer = await generatePdf(title, headers, rows);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="Performance_Report_${Date.now()}.pdf"`);
+    return res.send(pdfBuffer);
+  }
+});
+
 module.exports = {
   getAdminDashboard,
   getTeacherDashboard,
@@ -334,5 +391,7 @@ module.exports = {
   getParentDashboard,
   getAttendanceReport,
   getPerformanceReport,
+  exportAttendanceReport,
+  exportPerformanceReport,
   getStudentPerformanceReport: marksController.getStudentPerformanceReport
 };
