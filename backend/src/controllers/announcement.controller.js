@@ -110,9 +110,13 @@ const getAnnouncements = asyncHandler(async (req, res) => {
     JOIN users u ON a.created_by = u.id
     LEFT JOIN classes c ON a.class_id = c.id
     LEFT JOIN sections sec ON a.section_id = sec.id
-    WHERE (a.expires_at IS NULL OR a.expires_at > NOW())
+    WHERE 1=1
   `;
   const params = [];
+
+  if (req.user.role !== 'admin') {
+    sql += ' AND (a.expires_at IS NULL OR a.expires_at > NOW())';
+  }
 
   if (req.user.role === 'student') {
     // Get student enrollment class/section

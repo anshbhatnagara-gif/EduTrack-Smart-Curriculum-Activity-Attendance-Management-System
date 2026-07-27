@@ -21,9 +21,13 @@ const getAdminDashboardStats = async () => {
   
   let presentToday = 0;
   let absentToday = 0;
+  let lateToday = 0;
+  let leaveToday = 0;
   todayRecords.forEach(r => {
-    if (r.status === 'present' || r.status === 'late') presentToday++;
+    if (r.status === 'present') presentToday++;
     else if (r.status === 'absent') absentToday++;
+    else if (r.status === 'late') lateToday++;
+    else if (r.status === 'leave') leaveToday++;
   });
 
   // Overall attendance percentage
@@ -75,6 +79,8 @@ const getAdminDashboardStats = async () => {
     todayAttendance: {
       present: presentToday,
       absent: absentToday,
+      late: lateToday,
+      leave: leaveToday,
       totalMarked: todayRecords.length
     },
     overallAttendancePercentage: overallAtt.percentage,

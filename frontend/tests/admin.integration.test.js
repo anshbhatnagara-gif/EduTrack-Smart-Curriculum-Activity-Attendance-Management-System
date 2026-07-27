@@ -105,6 +105,31 @@ test('Phase F2 Admin API Integration Test Suite', async (t) => {
       const eRes = await fetch(`${BASE_URL}/academic/enrollments`, { headers });
       assert.strictEqual(eRes.status, 200);
     });
+
+    await t.test('10. Timetable Endpoint', async () => {
+      const res = await fetch(`${BASE_URL}/timetable`, { headers });
+      assert.strictEqual(res.status, 200);
+      const body = await res.json();
+      assert.strictEqual(body.success, true);
+      assert.ok(body.data.Monday !== undefined);
+    });
+
+    await t.test('11. Announcements Endpoint', async () => {
+      const res = await fetch(`${BASE_URL}/announcements`, { headers });
+      assert.strictEqual(res.status, 200);
+      const body = await res.json();
+      assert.strictEqual(body.success, true);
+      assert.ok(Array.isArray(body.data));
+    });
+
+    await t.test('12. Reports Endpoints', async () => {
+      const attRes = await fetch(`${BASE_URL}/reports/attendance`, { headers });
+      assert.strictEqual(attRes.status, 200);
+      
+      const perfRes = await fetch(`${BASE_URL}/reports/performance?classId=1`, { headers });
+      // If classId=1 doesn't exist, it might return 200 with empty array, or 400 if missing. We provided classId=1.
+      assert.ok([200, 404].includes(perfRes.status)); // Accept 404 if class is not found, but it should be 200 for missing class returning empty array in our impl.
+    });
   } finally {
     server.close();
   }

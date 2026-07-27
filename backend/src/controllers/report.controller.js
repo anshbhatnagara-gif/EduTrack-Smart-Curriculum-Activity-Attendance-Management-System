@@ -197,7 +197,7 @@ const getParentDashboard = asyncHandler(async (req, res) => {
 
 // GET /api/reports/attendance
 const getAttendanceReport = asyncHandler(async (req, res) => {
-  const { classId, sectionId, subjectId, startDate, endDate } = req.query;
+  const { classId, sectionId, subjectId, studentId, startDate, endDate } = req.query;
 
   let sql = `
     SELECT ar.id as record_id, s.attendance_date, s.lecture_number, sub.name as subject_name,
@@ -214,6 +214,7 @@ const getAttendanceReport = asyncHandler(async (req, res) => {
   if (classId) { sql += ' AND s.class_id = ?'; params.push(classId); }
   if (sectionId) { sql += ' AND s.section_id = ?'; params.push(sectionId); }
   if (subjectId) { sql += ' AND s.subject_id = ?'; params.push(subjectId); }
+  if (studentId) { sql += ' AND ar.student_id = ?'; params.push(studentId); }
   if (startDate) { sql += ' AND s.attendance_date >= ?'; params.push(startDate); }
   if (endDate) { sql += ' AND s.attendance_date <= ?'; params.push(endDate); }
 

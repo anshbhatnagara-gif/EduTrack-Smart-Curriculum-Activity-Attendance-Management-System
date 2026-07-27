@@ -30,6 +30,9 @@ import ClassesSections from '../pages/admin/ClassesSections';
 import Subjects from '../pages/admin/Subjects';
 import TeacherAssignments from '../pages/admin/TeacherAssignments';
 import StudentEnrollments from '../pages/admin/StudentEnrollments';
+import AdminTimetable from '../pages/admin/AdminTimetable';
+import AdminAnnouncements from '../pages/admin/AdminAnnouncements';
+import AdminReports from '../pages/admin/AdminReports';
 
 // Teacher Pages
 import TeacherDashboard from '../pages/teacher/TeacherDashboard';
@@ -94,6 +97,9 @@ const AppRoutes = () => {
             <Route path="/admin/academic/subjects" element={<Subjects />} />
             <Route path="/admin/academic/assignments" element={<TeacherAssignments />} />
             <Route path="/admin/academic/enrollments" element={<StudentEnrollments />} />
+            <Route path="/admin/timetable" element={<AdminTimetable />} />
+            <Route path="/admin/announcements" element={<AdminAnnouncements />} />
+            <Route path="/admin/reports" element={<AdminReports />} />
           </Route>
         </Route>
 
